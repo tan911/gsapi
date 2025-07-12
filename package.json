@@ -9,11 +9,13 @@
         "dev": "tsx --watch src/server.ts",
         "lint": "eslint src/**/*.ts",
         "lint:fix": "eslint src/**/*.ts --fix",
-        "format": "prettier --write src/**/*.ts",
-        "format:check": "prettier --check src/**/*.ts",
+        "format": "prettier --write \"src/**/*.{ts,json}\" \"prisma/**/*.ts\"",
+        "format:check": "prettier --check \"src/**/*.{ts,json}\" \"prisma/**/*.ts\"",
         "type:check": "tsc --noEmit",
         "clean": "rm -rf dist",
-        "prisma:generate": "prisma generate"
+        "prisma:generate": "prisma generate",
+        "prisma:migrate:dev": "prisma migrate dev",
+        "prisma:seed": "prisma db seed"
     },
     "keywords": [],
     "author": "",
@@ -45,5 +47,8 @@
         "tsx": "^4.20.3",
         "typescript": "^5.8.3",
         "typescript-eslint": "^8.36.0"
+    },
+    "prisma": {
+        "seed": "ts-node --compiler-options {\"module\":\"commonjs\"} prisma/gen/seed.ts"
     }
 }

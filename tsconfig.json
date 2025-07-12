@@ -8,7 +8,7 @@
 
         /* Emit */
         "outDir": "./dist",
-        "rootDir": "./src",
+        "rootDir": "./",
         "removeComments": true,
         "sourceMap": true,
         "declaration": false,
@@ -44,10 +44,11 @@
             "@/controllers/*": ["src/controllers/*"],
             "@/middlewares/*": ["src/middleware/*"],
             "@/utils/*": ["src/utils/*"],
-            "@/config/*": ["src/config/*"]
+            "@/config/*": ["src/config/*"],
+            "@/prisma/*": ["prisma/*"]
         }
     },
-    "include": ["src/**/*"],
+    "include": ["src/**/*", "prisma/**/*.ts"],
     "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"],
     "ts-node": {
         "esm": false,

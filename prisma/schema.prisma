@@ -19,6 +19,13 @@ enum Role {
   ARTIST
 }
 
+enum BookingStatus {
+  Pending
+  Confirmed
+  Cancelled
+  Completed
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -29,8 +36,11 @@ model User {
   createdAt     DateTime
   updatedAt     DateTime
 
-  Account Account[]
-  Session Session[]
+  Account       Account[]
+  Session       Session[]
+  Artist        Artist[]
+  ClientBooking Booking[] @relation("clientBooking")
+  ArtistBooking Booking[] @relation("artistBooking")
 }
 
 model Session {
@@ -71,4 +81,56 @@ model Verification {
   expiresAt  String
   createdAt  String
   updatedAt  String
+}
+
+model Artist {
+  id                   String  @id @default(cuid())
+  userId               String
+  bio                  String
+  // hourlyRate      Int
+  experienceYears      Int     @map("experience_years")
+  location             String  @db.VarChar(255)
+  availabilitySchedule Json
+  rating               Decimal
+
+  User User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  Service Service[]
+}
+
+model Service {
+  id            Int      @id @default(autoincrement())
+  artistId      String
+  name          String   @db.VarChar(255)
+  description   String
+  price         Decimal
+  durationHours Int      @map("duration_hours")
+  // category      String  @db.VarChar(100)
+  isActive      Boolean  @map("is_active")
+  createdAt     DateTime
+  updatedAt     DateTime
+
+  Artist Artist @relation(fields: [artistId], references: [id], onDelete: Cascade)
+
+  Booking Booking[]
+}
+
+model Booking {
+  id          Int           @id @default(autoincrement())
+  clientId    String
+  artistId    String
+  serviceId   Int
+  bookingDate DateTime
+  startTime   DateTime      @map("start_time") @db.Time()
+  endTime     DateTime      @map("end_time") @db.Time()
+  price       Decimal
+  status      BookingStatus @default(Pending)
+  location    String        @db.VarChar(255)
+  createdAt   DateTime
+  updatedAt   DateTime
+
+  // ref: https://github.com/prisma/prisma/discussions/13341
+  Client  User    @relation(fields: [clientId], references: [id], name: "clientBooking", onDelete: Cascade)
+  Artist  User    @relation(fields: [artistId], references: [id], name: "artistBooking", onDelete: Cascade)
+  Service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 }
