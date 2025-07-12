@@ -10,7 +10,7 @@ process.on('uncaughtException', (error) => {
     logger.error(`Uncaught Exception: ${error}`)
 })
 
-const server = app.listen(Number(env.API_PORT), () => {
+const server = app.listen(env.API_PORT, () => {
     logger.info(`Server running at \t\thttp://localhost:${env.API_PORT}`)
 })
 

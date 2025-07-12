@@ -1,12 +1,10 @@
 import express, { type Express } from 'express'
-import dotenv from 'dotenv'
 import morgan from 'morgan'
 import cors from 'cors'
 import compression from 'compression'
 import env from '@/config/env'
 import logger from '@/config/logger'
 
-dotenv.config()
 const app: Express = express()
 
 const origin = [env.API_FRONTEND_URL_LOCAL, env.API_FRONTEND_URL_PROD]
