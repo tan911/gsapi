@@ -4,6 +4,8 @@ import cors from 'cors'
 import compression from 'compression'
 import env from '@/config/env'
 import logger from '@/config/logger'
+import artists from '@/controllers/artist'
+import apiError from '@/middlewares/api-error'
 
 const app: Express = express()
 
@@ -30,8 +32,13 @@ app.use(
     })
 )
 
+app.use('/v1/artists', artists)
+
 app.use('/ping', (req, res) => {
     res.json({ message: 'ping' })
 })
+
+// https://signatureapi.com/docs/api/errors
+app.use(apiError)
 
 export default app

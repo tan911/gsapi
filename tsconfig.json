@@ -42,7 +42,7 @@
         "paths": {
             "@/*": ["src/*"],
             "@/controllers/*": ["src/controllers/*"],
-            "@/middlewares/*": ["src/middleware/*"],
+            "@/middlewares/*": ["src/middlewares/*"],
             "@/utils/*": ["src/utils/*"],
             "@/config/*": ["src/config/*"],
             "@/prisma/*": ["prisma/*"]
