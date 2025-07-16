@@ -1,9 +1,11 @@
 import * as z from 'zod'
-import { Router, Response, Request } from 'express'
-import { ArtistService, TBookingQuery } from '@/services/artist'
+import { Router, Request } from 'express'
 import prisma, { BookingStatus } from '@/prisma/index'
 import logger from '@/config/logger'
+import { ArtistService } from '@/services/artist'
 import { validateRequest } from '@/middlewares/validate-request'
+import { getValidated } from '@/utils/validation'
+import { TGetBookingData, TGetBookingsData } from '@/types/artist'
 
 const router: Router = Router()
 
@@ -32,13 +34,15 @@ router.get(
                 .optional(),
         }),
     }),
-    async (req: Request, res: Response, next) => {
+    async (req: Request, res, next) => {
         const service = new ArtistService({ prisma, logger })
 
         try {
-            const { userId } = req.validated?.params as { userId: string }
-            const queries = req.validated?.query as TBookingQuery
-            const data = await service.getBooking(userId, queries)
+            const getReq = getValidated<TGetBookingsData>(req)
+            const params = getReq.params
+            const queries = getReq.query
+
+            const data = await service.getBooking(params.userId, queries)
 
             res.status(200).json({
                 data: data,
@@ -49,20 +53,29 @@ router.get(
     }
 )
 
-router.get('/:userId/bookings/:bookingId', async (req, res) => {
-    const service = new ArtistService({ prisma, logger })
+router.get(
+    '/:userId/bookings/:bookingId',
+    validateRequest({
+        params: z.object({
+            userId: z.string(),
+            bookingId: z.string(),
+        }),
+    }),
+    async (req: Request, res, next) => {
+        const service = new ArtistService({ prisma, logger })
 
-    try {
-        const userId = req.params.userId
-        const bookingId = +req.params.bookingId
-        const data = await service.getBookingById(userId, bookingId)
+        try {
+            const getReq = getValidated<TGetBookingData>(req)
+            const { userId, bookingId } = getReq.params
+            const data = await service.getBookingById(userId, +bookingId)
 
-        res.json({
-            data: data,
-        })
-    } catch (err) {
-        console.log(err)
+            res.json({
+                data: data,
+            })
+        } catch (err) {
+            next(err)
+        }
     }
-})
+)
 
 export default router

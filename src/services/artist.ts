@@ -1,5 +1,6 @@
 import { PrismaClient, User, Booking, BookingStatus } from '@/prisma/index'
 import { Logger } from 'winston'
+import { TBookingQuery } from '@/types/artist'
 
 interface IArtistService {
     getBooking(userId: User['id'], queries: TBookingQuery): Promise<Booking[]>
@@ -9,13 +10,6 @@ interface IArtistService {
 interface Context {
     prisma: PrismaClient
     logger: Logger
-}
-
-export type TBookingQuery = {
-    status?: BookingStatus | undefined
-    startTimeFrom?: Booking['startTime'] | undefined
-    endTimeTo?: Booking['endTime'] | undefined
-    bookingDate?: Booking['bookingDate'] | undefined
 }
 
 export class ArtistService implements IArtistService {
