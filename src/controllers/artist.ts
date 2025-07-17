@@ -5,7 +5,7 @@ import logger from '@/config/logger'
 import { ArtistService } from '@/services/artist'
 import { validateRequest } from '@/middlewares/validate-request'
 import { getValidated } from '@/utils/validation'
-import { TGetBookingData, TGetBookingsData } from '@/types/artist'
+import { TGetBookingData, TGetBookingsData, TUpdateBookingStatus } from '@/types/artist'
 
 const router: Router = Router()
 
@@ -70,6 +70,31 @@ router.get(
             const data = await service.getBookingById(userId, +bookingId)
 
             res.json({
+                data: data,
+            })
+        } catch (err) {
+            next(err)
+        }
+    }
+)
+
+router.patch(
+    '/:userId/bookings/:bookingId',
+    validateRequest({
+        params: z.object({ userId: z.string(), bookingId: z.string() }),
+        body: z.object({
+            status: z.enum(BookingStatus),
+        }),
+    }),
+    async (req, res, next) => {
+        const service = new ArtistService({ prisma, logger })
+
+        try {
+            const getReq = getValidated<TUpdateBookingStatus>(req)
+            const { params, body } = getReq
+            const data = await service.updateBookingStatus(+params.bookingId, body.status)
+
+            res.status(201).json({
                 data: data,
             })
         } catch (err) {

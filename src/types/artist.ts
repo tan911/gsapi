@@ -9,6 +9,11 @@ export type TGetBookingData = {
     params: { userId: string; bookingId: string }
 }
 
+export type TUpdateBookingStatus = {
+    params: { userId: string; bookingId: string }
+    body: { status: BookingStatus }
+}
+
 export type TBookingQuery = {
     status?: BookingStatus | undefined
     startTimeFrom?: Booking['startTime'] | undefined
