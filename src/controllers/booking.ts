@@ -2,7 +2,7 @@ import * as z from 'zod'
 import { Router, Request } from 'express'
 import prisma, { BookingStatus } from '@/prisma/index'
 import logger from '@/config/logger'
-import { ArtistService } from '@/services/artist'
+import { BookingService } from '@/services/booking'
 import { validateRequest } from '@/middlewares/validate-request'
 import { getValidated } from '@/utils/validation'
 import { TGetBookingData, TGetBookingsData, TUpdateBookingStatus } from '@/types/artist'
@@ -10,10 +10,10 @@ import { TGetBookingData, TGetBookingsData, TUpdateBookingStatus } from '@/types
 const router: Router = Router()
 
 router.get(
-    '/:userId/bookings',
+    '/',
     validateRequest({
-        params: z.object({ userId: z.string() }),
         query: z.object({
+            id: z.string().min(1),
             status: z.enum(BookingStatus).optional(),
             timeFrom: z
                 .union([
@@ -35,14 +35,13 @@ router.get(
         }),
     }),
     async (req: Request, res, next) => {
-        const service = new ArtistService({ prisma, logger })
+        const service = new BookingService({ prisma, logger })
 
         try {
             const getReq = getValidated<TGetBookingsData>(req)
-            const params = getReq.params
             const queries = getReq.query
 
-            const data = await service.getBooking(params.userId, queries)
+            const data = await service.getBooking(queries.id, queries)
 
             res.status(200).json({
                 data: data,
@@ -54,22 +53,21 @@ router.get(
 )
 
 router.get(
-    '/:userId/bookings/:bookingId',
+    '/:id',
     validateRequest({
         params: z.object({
-            userId: z.string(),
-            bookingId: z.string(),
+            id: z.string().min(1),
         }),
     }),
     async (req: Request, res, next) => {
-        const service = new ArtistService({ prisma, logger })
+        const service = new BookingService({ prisma, logger })
 
         try {
             const getReq = getValidated<TGetBookingData>(req)
-            const { userId, bookingId } = getReq.params
-            const data = await service.getBookingById(userId, +bookingId)
+            const id = Number(getReq.params.id)
+            const data = await service.getBookingById(id)
 
-            res.json({
+            res.status(200).json({
                 data: data,
             })
         } catch (err) {
@@ -79,20 +77,23 @@ router.get(
 )
 
 router.patch(
-    '/:userId/bookings/:bookingId',
+    '/:id',
     validateRequest({
-        params: z.object({ userId: z.string(), bookingId: z.string() }),
+        query: z.object({
+            id: z.string().min(1),
+        }),
         body: z.object({
             status: z.enum(BookingStatus),
         }),
     }),
     async (req, res, next) => {
-        const service = new ArtistService({ prisma, logger })
+        const service = new BookingService({ prisma, logger })
 
         try {
             const getReq = getValidated<TUpdateBookingStatus>(req)
-            const { params, body } = getReq
-            const data = await service.updateBookingStatus(+params.bookingId, body.status)
+            const { query, body } = getReq
+            // TODO: It should allow update to any fields regardless of the user's type.
+            const data = await service.updateBookingStatus(+query.id, body.status)
 
             res.status(201).json({
                 data: data,

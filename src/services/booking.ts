@@ -2,7 +2,7 @@ import { PrismaClient, User, Booking, BookingStatus } from '@/prisma/index'
 import { Logger } from 'winston'
 import { TBookingQuery } from '@/types/artist'
 
-interface IArtistService {
+interface IBookingService {
     getBooking(userId: User['id'], queries: TBookingQuery): Promise<Booking[]>
     // getBookingById(userId: User['id'], bookingId: Booking['id']): Promise<Booking>
 }
@@ -12,7 +12,7 @@ interface Context {
     logger: Logger
 }
 
-export class ArtistService implements IArtistService {
+export class BookingService implements IBookingService {
     constructor(private ctx: Context) {}
 
     public async getBooking(userId: User['id'], queries: TBookingQuery) {
@@ -42,24 +42,10 @@ export class ArtistService implements IArtistService {
         })
     }
 
-    public async getBookingById(userId: User['id'], bookingId: Booking['id']) {
+    public async getBookingById(id: Booking['id']) {
         return await this.ctx.prisma.booking.findUnique({
             where: {
-                id: bookingId,
-                AND: {
-                    artistId: userId,
-                },
-            },
-        })
-    }
-
-    public async getBookingByStatus(userId: User['id'], status: BookingStatus) {
-        return await this.ctx.prisma.booking.findMany({
-            where: {
-                artistId: userId,
-                AND: {
-                    status: status,
-                },
+                id: id,
             },
         })
     }

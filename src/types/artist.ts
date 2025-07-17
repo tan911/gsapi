@@ -1,20 +1,20 @@
 import { BookingStatus, Booking } from '@/prisma/index'
 
 export type TGetBookingsData = {
-    params: { userId: string }
     query: TBookingQuery
 }
 
 export type TGetBookingData = {
-    params: { userId: string; bookingId: string }
+    params: { id: string }
 }
 
 export type TUpdateBookingStatus = {
-    params: { userId: string; bookingId: string }
+    query: { id: string }
     body: { status: BookingStatus }
 }
 
 export type TBookingQuery = {
+    id: string
     status?: BookingStatus | undefined
     startTimeFrom?: Booking['startTime'] | undefined
     endTimeTo?: Booking['endTime'] | undefined

@@ -4,7 +4,7 @@ import cors from 'cors'
 import compression from 'compression'
 import env from '@/config/env'
 import logger from '@/config/logger'
-import artists from '@/controllers/artist'
+import bookingRouter from '@/controllers/booking'
 import apiError from '@/middlewares/api-error'
 
 const app: Express = express()
@@ -32,7 +32,7 @@ app.use(
     })
 )
 
-app.use('/v1/artists', artists)
+app.use('/v1/bookings', bookingRouter)
 
 app.use('/ping', (req, res) => {
     res.json({ message: 'ping' })
