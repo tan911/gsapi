@@ -2,18 +2,18 @@ import * as z from 'zod'
 import { Router, Request } from 'express'
 import prisma, { BookingStatus } from '@/prisma/index'
 import logger from '@/config/logger'
-import { ArtistService } from '@/services/artist'
+import { BookingService } from '@/services/booking'
 import { validateRequest } from '@/middlewares/validate-request'
 import { getValidated } from '@/utils/validation'
-import { TGetBookingData, TGetBookingsData } from '@/types/artist'
+import { TGetBooking, TGetBookings, TUpdateBooking } from '@/types/artist'
 
 const router: Router = Router()
 
 router.get(
-    '/:userId/bookings',
+    '/',
     validateRequest({
-        params: z.object({ userId: z.string() }),
         query: z.object({
+            id: z.cuid(),
             status: z.enum(BookingStatus).optional(),
             timeFrom: z
                 .union([
@@ -29,20 +29,18 @@ router.get(
                     z.undefined(),
                 ])
                 .optional(),
-            bookingDate: z
+            date: z
                 .union([z.string().transform((val) => new Date(val)), z.date(), z.undefined()])
                 .optional(),
         }),
     }),
     async (req: Request, res, next) => {
-        const service = new ArtistService({ prisma, logger })
+        const service = new BookingService({ prisma, logger })
 
         try {
-            const getReq = getValidated<TGetBookingsData>(req)
-            const params = getReq.params
+            const getReq = getValidated<TGetBookings>(req)
             const queries = getReq.query
-
-            const data = await service.getBooking(params.userId, queries)
+            const data = await service.getAll(queries.id, queries)
 
             res.status(200).json({
                 data: data,
@@ -54,22 +52,50 @@ router.get(
 )
 
 router.get(
-    '/:userId/bookings/:bookingId',
+    '/:id',
     validateRequest({
         params: z.object({
-            userId: z.string(),
-            bookingId: z.string(),
+            id: z.string().min(1),
         }),
     }),
     async (req: Request, res, next) => {
-        const service = new ArtistService({ prisma, logger })
+        const service = new BookingService({ prisma, logger })
 
         try {
-            const getReq = getValidated<TGetBookingData>(req)
-            const { userId, bookingId } = getReq.params
-            const data = await service.getBookingById(userId, +bookingId)
+            const getReq = getValidated<TGetBooking>(req)
+            const id = Number(getReq.params.id)
+            const data = await service.get(id)
 
-            res.json({
+            res.status(200).json({
+                data: data,
+            })
+        } catch (err) {
+            next(err)
+        }
+    }
+)
+
+router.put(
+    '/:id',
+    validateRequest({
+        params: z.object({
+            id: z.string().min(1),
+        }),
+        body: z.object({
+            // TODO: Allow updates for client users.
+            // Currently unsure of what client users are allowed to do, so leaving it as is for now.
+            status: z.enum(BookingStatus),
+        }),
+    }),
+    async (req: Request, res, next) => {
+        const service = new BookingService({ prisma, logger })
+
+        try {
+            const getReq = getValidated<TUpdateBooking>(req)
+            const id = Number(getReq.params.id)
+            const data = await service.update(id, getReq.body)
+
+            res.status(200).json({
                 data: data,
             })
         } catch (err) {
