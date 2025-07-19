@@ -5,11 +5,11 @@ export type TGetBookings = {
 }
 
 export type TGetBooking = {
-    params: { id: string }
+    params: { id: number }
 }
 
 export type TUpdateBooking = {
-    params: { id: string }
+    params: { id: number }
     body: { status: BookingStatus }
 }
 
