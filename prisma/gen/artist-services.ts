@@ -15,8 +15,6 @@ export async function createServices(artist: Artist[] | any) {
                 price: 250.0,
                 durationHours: 3,
                 isActive: true,
-                createdAt: new Date(),
-                updatedAt: new Date(),
             },
         }),
         prisma.service.create({
@@ -28,8 +26,6 @@ export async function createServices(artist: Artist[] | any) {
                 price: 120.0,
                 durationHours: 2,
                 isActive: true,
-                createdAt: new Date(),
-                updatedAt: new Date(),
             },
         }),
         prisma.service.create({
@@ -41,8 +37,6 @@ export async function createServices(artist: Artist[] | any) {
                 price: 80.0,
                 durationHours: 1,
                 isActive: true,
-                createdAt: new Date(),
-                updatedAt: new Date(),
             },
         }),
         prisma.service.create({
@@ -54,8 +48,6 @@ export async function createServices(artist: Artist[] | any) {
                 price: 150.0,
                 durationHours: 3,
                 isActive: true,
-                createdAt: new Date(),
-                updatedAt: new Date(),
             },
         }),
         prisma.service.create({
@@ -67,8 +59,6 @@ export async function createServices(artist: Artist[] | any) {
                 price: 45.0,
                 durationHours: 1,
                 isActive: true,
-                createdAt: new Date(),
-                updatedAt: new Date(),
             },
         }),
         prisma.service.create({
@@ -80,8 +70,6 @@ export async function createServices(artist: Artist[] | any) {
                 price: 75.0,
                 durationHours: 2,
                 isActive: true,
-                createdAt: new Date(),
-                updatedAt: new Date(),
             },
         }),
         prisma.service.create({
@@ -93,8 +81,6 @@ export async function createServices(artist: Artist[] | any) {
                 price: 200.0,
                 durationHours: 2,
                 isActive: true,
-                createdAt: new Date(),
-                updatedAt: new Date(),
             },
         }),
         prisma.service.create({
@@ -106,8 +92,6 @@ export async function createServices(artist: Artist[] | any) {
                 price: 500.0,
                 durationHours: 4,
                 isActive: true,
-                createdAt: new Date(),
-                updatedAt: new Date(),
             },
         }),
     ])

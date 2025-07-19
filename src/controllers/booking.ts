@@ -5,7 +5,7 @@ import logger from '@/config/logger'
 import { BookingService } from '@/services/booking'
 import { validateRequest } from '@/middlewares/validate-request'
 import { getValidated } from '@/utils/validation'
-import { TGetBooking, TGetBookings, TUpdateBooking } from '@/types/artist'
+import { TGetBooking, TGetBookings, TUpdateBooking } from '@/types/booking'
 
 const router: Router = Router()
 
@@ -57,14 +57,17 @@ router.get(
         params: z.object({
             id: z.string().min(1),
         }),
+        transform: (req: Request) => ({
+            id: Number(req.params.id),
+        }),
     }),
     async (req: Request, res, next) => {
         const service = new BookingService({ prisma, logger })
 
         try {
             const getReq = getValidated<TGetBooking>(req)
-            const id = Number(getReq.params.id)
-            const data = await service.get(id)
+
+            const data = await service.get(getReq.params.id)
 
             res.status(200).json({
                 data: data,
@@ -86,14 +89,16 @@ router.put(
             // Currently unsure of what client users are allowed to do, so leaving it as is for now.
             status: z.enum(BookingStatus),
         }),
+        transform: (req: Request) => ({
+            id: Number(req.params.id),
+        }),
     }),
     async (req: Request, res, next) => {
         const service = new BookingService({ prisma, logger })
 
         try {
             const getReq = getValidated<TUpdateBooking>(req)
-            const id = Number(getReq.params.id)
-            const data = await service.update(id, getReq.body)
+            const data = await service.update(getReq.params.id, getReq.body)
 
             res.status(200).json({
                 data: data,

@@ -1,6 +1,6 @@
 import { PrismaClient, User, Booking, Prisma } from '@/prisma/index'
 import { Logger } from 'winston'
-import { TBookingQuery } from '@/types/artist'
+import { TBookingQuery } from '@/types/booking'
 
 interface IBookingService {
     getAll(userId: User['id'], queries: TBookingQuery): Promise<Booking[]>
