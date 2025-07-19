@@ -26,7 +26,7 @@ export function validateRequest(config: ValidationConfig) {
             }
 
             if (config.query) {
-                const queries: unknown = config.transform ? config.transform(req) : req.query
+                const queries: unknown = config.transform ? config.transform(req) : req.params
                 const result = await config.query.safeParseAsync(queries)
 
                 if (!result.success) {
@@ -37,7 +37,8 @@ export function validateRequest(config: ValidationConfig) {
             }
 
             if (config.body) {
-                const result = await config.body.safeParseAsync(req.body)
+                const reqBody: unknown = config.transform ? config.transform(req) : req.body
+                const result = await config.body.safeParseAsync(reqBody)
 
                 if (!result.success) {
                     throw new z.ZodError(result.error.issues)
