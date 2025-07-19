@@ -5,7 +5,7 @@ import logger from '@/config/logger'
 import { BookingService } from '@/services/booking'
 import { validateRequest } from '@/middlewares/validate-request'
 import { getValidated } from '@/utils/validation'
-import { TGetBookingData, TGetBookingsData, TUpdateBookingStatus } from '@/types/artist'
+import { TGetBooking, TGetBookings, TUpdateBooking } from '@/types/artist'
 
 const router: Router = Router()
 
@@ -13,7 +13,7 @@ router.get(
     '/',
     validateRequest({
         query: z.object({
-            id: z.string().min(1),
+            id: z.cuid(),
             status: z.enum(BookingStatus).optional(),
             timeFrom: z
                 .union([
@@ -29,7 +29,7 @@ router.get(
                     z.undefined(),
                 ])
                 .optional(),
-            bookingDate: z
+            date: z
                 .union([z.string().transform((val) => new Date(val)), z.date(), z.undefined()])
                 .optional(),
         }),
@@ -38,10 +38,9 @@ router.get(
         const service = new BookingService({ prisma, logger })
 
         try {
-            const getReq = getValidated<TGetBookingsData>(req)
+            const getReq = getValidated<TGetBookings>(req)
             const queries = getReq.query
-
-            const data = await service.getBooking(queries.id, queries)
+            const data = await service.getAll(queries.id, queries)
 
             res.status(200).json({
                 data: data,
@@ -63,9 +62,9 @@ router.get(
         const service = new BookingService({ prisma, logger })
 
         try {
-            const getReq = getValidated<TGetBookingData>(req)
+            const getReq = getValidated<TGetBooking>(req)
             const id = Number(getReq.params.id)
-            const data = await service.getBookingById(id)
+            const data = await service.get(id)
 
             res.status(200).json({
                 data: data,
@@ -76,26 +75,27 @@ router.get(
     }
 )
 
-router.patch(
+router.put(
     '/:id',
     validateRequest({
-        query: z.object({
+        params: z.object({
             id: z.string().min(1),
         }),
         body: z.object({
+            // TODO: Allow updates for client users.
+            // Currently unsure of what client users are allowed to do, so leaving it as is for now.
             status: z.enum(BookingStatus),
         }),
     }),
-    async (req, res, next) => {
+    async (req: Request, res, next) => {
         const service = new BookingService({ prisma, logger })
 
         try {
-            const getReq = getValidated<TUpdateBookingStatus>(req)
-            const { query, body } = getReq
-            // TODO: It should allow update to any fields regardless of the user's type.
-            const data = await service.updateBookingStatus(+query.id, body.status)
+            const getReq = getValidated<TUpdateBooking>(req)
+            const id = Number(getReq.params.id)
+            const data = await service.update(id, getReq.body)
 
-            res.status(201).json({
+            res.status(200).json({
                 data: data,
             })
         } catch (err) {

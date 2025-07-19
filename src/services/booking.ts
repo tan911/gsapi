@@ -1,10 +1,11 @@
-import { PrismaClient, User, Booking, BookingStatus } from '@/prisma/index'
+import { PrismaClient, User, Booking, Prisma } from '@/prisma/index'
 import { Logger } from 'winston'
 import { TBookingQuery } from '@/types/artist'
 
 interface IBookingService {
-    getBooking(userId: User['id'], queries: TBookingQuery): Promise<Booking[]>
-    // getBookingById(userId: User['id'], bookingId: Booking['id']): Promise<Booking>
+    getAll(userId: User['id'], queries: TBookingQuery): Promise<Booking[]>
+    get(id: Booking['id']): Promise<Booking | null>
+    update(id: Booking['id'], data: Prisma.BookingUncheckedUpdateInput): Promise<Booking>
 }
 
 interface Context {
@@ -15,7 +16,7 @@ interface Context {
 export class BookingService implements IBookingService {
     constructor(private ctx: Context) {}
 
-    public async getBooking(userId: User['id'], queries: TBookingQuery) {
+    public async getAll(userId: User['id'], queries: TBookingQuery) {
         const filters = []
 
         if (queries.status) {
@@ -30,8 +31,8 @@ export class BookingService implements IBookingService {
             filters.push({ endTime: { lte: queries.endTimeTo } })
         }
 
-        if (queries.bookingDate) {
-            filters.push({ bookingDate: queries.bookingDate })
+        if (queries.date) {
+            filters.push({ bookingDate: queries.date })
         }
 
         return await this.ctx.prisma.booking.findMany({
@@ -42,7 +43,7 @@ export class BookingService implements IBookingService {
         })
     }
 
-    public async getBookingById(id: Booking['id']) {
+    public async get(id: Booking['id']) {
         return await this.ctx.prisma.booking.findUnique({
             where: {
                 id: id,
@@ -50,18 +51,16 @@ export class BookingService implements IBookingService {
         })
     }
 
-    public async updateBookingStatus(id: Booking['id'], status: BookingStatus) {
-        const data = this.ctx.prisma.booking.update({
+    public async update(id: Booking['id'], data: Prisma.BookingUncheckedUpdateInput) {
+        const booking = this.ctx.prisma.booking.update({
             where: {
                 id: id,
             },
-            data: {
-                status: status,
-            },
+            data,
         })
 
         this.ctx.logger.info(`Updated booking id=${id}`)
 
-        return data
+        return booking
     }
 }
