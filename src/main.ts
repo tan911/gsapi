@@ -5,6 +5,7 @@ import compression from 'compression'
 import env from '@/config/env'
 import logger from '@/config/logger'
 import bookingRouter from '@/controllers/booking'
+import serviceRouter from '@/controllers/service-offering'
 import apiError from '@/middlewares/api-error'
 
 const app: Express = express()
@@ -33,6 +34,7 @@ app.use(
 )
 
 app.use('/v1/bookings', bookingRouter)
+app.use('/v1/services', serviceRouter)
 
 app.use('/ping', (req, res) => {
     res.json({ message: 'ping' })
