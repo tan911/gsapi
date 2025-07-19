@@ -15,7 +15,8 @@ export function validateRequest(config: ValidationConfig) {
             const validated: { params?: unknown; query?: unknown; body?: unknown } = {}
 
             if (config.params) {
-                const result = await config.params.safeParseAsync(req.params)
+                const params: unknown = config.transform ? config.transform(req) : req.query
+                const result = await config.params.safeParseAsync(params)
 
                 if (!result.success) {
                     throw new z.ZodError(result.error.issues)
