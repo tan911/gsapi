@@ -15,7 +15,7 @@ export function validateRequest(config: ValidationConfig) {
             const validated: { params?: unknown; query?: unknown; body?: unknown } = {}
 
             if (config.params) {
-                const params: unknown = config.transform ? config.transform(req) : req.query
+                const params: unknown = config.transform ? config.transform(req) : req.params
                 const result = await config.params.safeParseAsync(params)
 
                 if (!result.success) {
@@ -26,7 +26,7 @@ export function validateRequest(config: ValidationConfig) {
             }
 
             if (config.query) {
-                const queries: unknown = config.transform ? config.transform(req) : req.params
+                const queries: unknown = config.transform ? config.transform(req) : req.query
                 const result = await config.query.safeParseAsync(queries)
 
                 if (!result.success) {
