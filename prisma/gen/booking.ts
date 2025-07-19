@@ -21,8 +21,6 @@ export async function createBookings(
                 price: 250.0,
                 status: 'Confirmed',
                 location: "Client's Home, New York, NY",
-                createdAt: new Date(),
-                updatedAt: new Date(),
             },
         }),
         prisma.booking.create({
@@ -36,8 +34,6 @@ export async function createBookings(
                 price: 80.0,
                 status: 'Completed',
                 location: 'Salon, Los Angeles, CA',
-                createdAt: new Date(),
-                updatedAt: new Date(),
             },
         }),
         prisma.booking.create({
@@ -51,8 +47,6 @@ export async function createBookings(
                 price: 45.0,
                 status: 'Pending',
                 location: 'Nail Studio, Chicago, IL',
-                createdAt: new Date(),
-                updatedAt: new Date(),
             },
         }),
         prisma.booking.create({
