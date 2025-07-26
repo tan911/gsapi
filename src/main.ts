@@ -55,10 +55,6 @@ app.use('/v1', validateAuth)
 app.use('/v1/bookings', bookingRouter)
 app.use('/v1/services', serviceRouter)
 
-app.use('/ping', (req, res) => {
-    res.json({ message: 'ping' })
-})
-
 // https://signatureapi.com/docs/api/errors
 app.use(apiError)
 
