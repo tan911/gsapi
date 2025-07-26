@@ -23,6 +23,7 @@
     "dependencies": {
         "@prisma/client": "^6.11.1",
         "@prisma/extension-accelerate": "^2.0.2",
+        "better-auth": "^1.2.12",
         "compression": "^1.8.0",
         "cors": "^2.8.5",
         "dotenv": "^17.2.0",

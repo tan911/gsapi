@@ -15,8 +15,8 @@ datasource db {
 }
 
 enum Role {
-  CLIENT
-  ARTIST
+  client
+  artist
 }
 
 enum BookingStatus {
@@ -28,59 +28,66 @@ enum BookingStatus {
 
 model User {
   id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  emailVerified DateTime?
-  role          Role      @default(CLIENT)
+  name          String
+  email         String
+  role          Role      @default(client)
+  emailVerified Boolean   @default(false)
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+  artist        Artist[]
+  clientBooking Booking[] @relation("clientBooking")
+  artistBooking Booking[] @relation("artistBooking")
 
-  Account       Account[]
-  Session       Session[]
-  Artist        Artist[]
-  ClientBooking Booking[] @relation("clientBooking")
-  ArtistBooking Booking[] @relation("artistBooking")
+  @@unique([email])
+  @@map("users")
 }
 
 model Session {
   id        String   @id @default(cuid())
-  userId    String
-  token     String
   expiresAt DateTime
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
   ipAddress String?
   userAgent String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  User User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([token])
+  @@map("sessions")
 }
 
 model Account {
   id                    String    @id @default(cuid())
-  userId                String
   accountId             String
   providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
+  idToken               String?
   accessTokenExpiresAt  DateTime?
   refreshTokenExpiresAt DateTime?
   scope                 String?
-  idToken               String?
   password              String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 
-  User User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@map("accounts")
 }
 
 model Verification {
-  id         String @id @default(cuid())
+  id         String    @id
   identifier String
   value      String
-  expiresAt  String
-  createdAt  String
-  updatedAt  String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verifications")
 }
 
 model Artist {
@@ -93,9 +100,11 @@ model Artist {
   availabilitySchedule Json
   rating               Decimal
 
-  User User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  Service Service[]
+  service Service[]
+
+  @@map("artists")
 }
 
 model Service {
@@ -110,9 +119,11 @@ model Service {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  Artist Artist @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  artist Artist @relation(fields: [artistId], references: [id], onDelete: Cascade)
 
-  Booking Booking[]
+  booking Booking[]
+
+  @@map("services")
 }
 
 model Booking {
@@ -121,8 +132,8 @@ model Booking {
   artistId    String
   serviceId   Int
   bookingDate DateTime
-  startTime   DateTime      @map("start_time") @db.Time()
-  endTime     DateTime      @map("end_time") @db.Time()
+  startTime   DateTime      @map("start_time") @db.Time
+  endTime     DateTime      @map("end_time") @db.Time
   price       Decimal
   status      BookingStatus @default(Pending)
   location    String        @db.VarChar(255)
@@ -130,7 +141,9 @@ model Booking {
   updatedAt   DateTime      @updatedAt
 
   // ref: https://github.com/prisma/prisma/discussions/13341
-  Client  User    @relation(fields: [clientId], references: [id], name: "clientBooking", onDelete: Cascade)
-  Artist  User    @relation(fields: [artistId], references: [id], name: "artistBooking", onDelete: Cascade)
-  Service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  client  User    @relation(fields: [clientId], references: [id], name: "clientBooking", onDelete: Cascade)
+  artist  User    @relation(fields: [artistId], references: [id], name: "artistBooking", onDelete: Cascade)
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@map("bookings")
 }
