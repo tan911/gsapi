@@ -21,6 +21,11 @@ const corsOptions = {
     allowedHeaders: ['Content-Type', 'Authorization'],
 }
 
+// app health check
+app.get('/health', (_req, res) => {
+    res.status(200).json({ status: 'OK' })
+})
+
 /**
  *
  * Auth must be placed before any middleware - https://www.better-auth.com/docs/integrations/express
