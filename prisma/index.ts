@@ -1,4 +1,4 @@
-import { PrismaClient } from '../generated/prisma'
+import { PrismaClient } from '@prisma/client'
 import dotenv from 'dotenv'
 
 dotenv.config()
@@ -9,5 +9,5 @@ const prisma = globalForPrisma.prisma || new PrismaClient()
 
 if (process.env.API_ENVIRONMENT !== 'production') globalForPrisma.prisma = prisma
 
-export * from '../generated/prisma'
+export * from '@prisma/client'
 export default prisma
