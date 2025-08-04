@@ -18,7 +18,8 @@
         "type:check": "tsc --noEmit",
         "prisma:generate": "prisma generate",
         "prisma:migrate:dev": "prisma migrate dev",
-        "prisma:seed": "prisma db seed"
+        "prisma:seed": "prisma db seed",
+        "postinstall": "prisma generate"
     },
     "keywords": [],
     "author": "",
