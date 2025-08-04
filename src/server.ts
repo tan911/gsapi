@@ -1,6 +1,6 @@
 import logger from '@/config/logger'
 import env from '@/config/env'
-import app from './main'
+import app from '@/main'
 
 process.on('unhandledRejection', (error: unknown) => {
     logger.error('Unhandled Rejection:', error)

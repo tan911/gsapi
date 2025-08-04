@@ -7,7 +7,7 @@ export function parseTime(time?: string) {
 
     const [hours, minutes] = parts.map(Number)
 
-    if (isNaN(hours as number) || isNaN(minutes as number)) return undefined
+    if (isNaN(hours) || isNaN(minutes)) return undefined
 
     return new Date(1970, 0, 1, hours, minutes)
 }
