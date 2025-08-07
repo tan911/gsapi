@@ -9,6 +9,14 @@ export const auth = betterAuth({
     emailAndPassword: {
         enabled: true,
     },
-    trustedOrigins: ['http://localhost:8080'],
-    basePath: '/auth',
+    user: {
+        additionalFields: {
+            role: {
+                type: 'string',
+                input: true,
+            },
+        },
+    },
+    trustedOrigins: ['http://localhost:3000'],
+    basePath: '/api/auth',
 })
