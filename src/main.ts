@@ -31,7 +31,7 @@ app.get('/health', (_req, res) => {
  * Auth must be placed before any middleware - https://www.better-auth.com/docs/integrations/express
  *
  */
-app.all('/auth/{*any}', toNodeHandler(auth))
+app.all('/api/auth/{*any}', toNodeHandler(auth))
 
 app.use(cors(corsOptions))
 app.use(compression())
