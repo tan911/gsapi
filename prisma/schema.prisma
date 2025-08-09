@@ -96,14 +96,14 @@ model Verification {
 }
 
 model Artist {
-  id                   String  @id @default(cuid())
-  userId               String
-  bio                  String
+  id              String  @id @default(cuid())
+  userId          String
+  bio             String
   // hourlyRate      Int
-  experienceYears      Int     @map("experience_years")
-  location             String  @db.VarChar(255)
-  availabilitySchedule Json
-  rating               Decimal
+  experienceYears Int     @map("experience_years")
+  location        String  @db.VarChar(255)
+  // availabilitySchedule Json
+  rating          Decimal
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
