@@ -19,6 +19,11 @@ enum Role {
   artist
 }
 
+enum AvailabilityStatus {
+  available
+  unavailable
+}
+
 enum BookingStatus {
   Pending
   Confirmed
@@ -91,18 +96,20 @@ model Verification {
 }
 
 model Artist {
-  id                   String  @id @default(cuid())
-  userId               String
-  bio                  String
+  id              String  @id @default(cuid())
+  userId          String
+  bio             String
   // hourlyRate      Int
-  experienceYears      Int     @map("experience_years")
-  location             String  @db.VarChar(255)
-  availabilitySchedule Json
-  rating               Decimal
+  experienceYears Int     @map("experience_years")
+  location        String  @db.VarChar(255)
+  // availabilitySchedule Json
+  rating          Decimal
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  service Service[]
+  service               Service[]
+  Availability          Availability[]
+  RecurringAvailability RecurringAvailability[]
 
   @@map("artists")
 }
@@ -146,4 +153,33 @@ model Booking {
   service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
   @@map("bookings")
+}
+
+model Availability {
+  id        Int                @id @default(autoincrement())
+  artistId  String
+  startTime DateTime           @map("start_time") @db.Time
+  endTime   DateTime           @map("end_time") @db.Time
+  status    AvailabilityStatus @default(available)
+  notes     String?            @db.VarChar(255)
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  artist Artist @relation(fields: [artistId], references: [id], onDelete: Cascade)
+
+  @@map("availabilities")
+}
+
+model RecurringAvailability {
+  id        Int      @id @default(autoincrement())
+  artistId  String
+  dayOfWeek Int // 1 for Monday, 7 for Sunday
+  startTime DateTime @map("start_time") @db.Time
+  endTime   DateTime @map("end_time") @db.Time
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  artist Artist @relation(fields: [artistId], references: [id], onDelete: Cascade)
+
+  @@map("recurring_availabilities")
 }
