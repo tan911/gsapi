@@ -176,7 +176,7 @@ model Availability {
 model RecurringAvailability {
   id        Int      @id @default(autoincrement())
   artistId  String
-  dayOfWeek Int // 1 for Monday, 7 for Sunday 
+  dayOfWeek Int      @map("day_of_week") // 1 for Monday, 7 for Sunday 
   startTime DateTime @map("start_time") @db.Time
   endTime   DateTime @map("end_time") @db.Time
   createdAt DateTime @default(now())
