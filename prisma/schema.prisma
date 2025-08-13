@@ -163,6 +163,8 @@ model Availability {
   artistId  String
   startTime DateTime           @map("start_time") @db.Time
   endTime   DateTime           @map("end_time") @db.Time
+  date      DateTime           @db.Date
+  timezone  String             @default("UTC")
   status    AvailabilityStatus @default(available)
   notes     String?            @db.VarChar(255)
   createdAt DateTime           @default(now())
@@ -170,6 +172,8 @@ model Availability {
 
   artist Artist @relation(fields: [artistId], references: [id], onDelete: Cascade)
 
+  @@index([artistId, date])
+  @@index([artistId, status])
   @@map("availabilities")
 }
 
@@ -179,11 +183,15 @@ model RecurringAvailability {
   dayOfWeek Int      @map("day_of_week") // 1 for Monday, 7 for Sunday 
   startTime DateTime @map("start_time") @db.Time
   endTime   DateTime @map("end_time") @db.Time
+  timezone  String   @default("UTC")
+  isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   artist Artist @relation(fields: [artistId], references: [id], onDelete: Cascade)
 
+  @@unique([artistId, dayOfWeek], name: "artistId_dayOfWeek")
+  @@index([artistId, dayOfWeek, isActive])
   @@map("recurring_availabilities")
 }
 

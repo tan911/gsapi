@@ -7,6 +7,7 @@ import env from '@/config/env'
 import logger from '@/config/logger'
 import bookingRouter from '@/controllers/booking'
 import serviceRouter from '@/controllers/service-offering'
+import availabilityRouter from '@/controllers/availability'
 import apiError from '@/middlewares/api-error'
 import validateAuth from '@/middlewares/validate-auth'
 import { auth } from '@/utils/auth'
@@ -54,6 +55,7 @@ app.use('/v1', validateAuth)
 // private routes
 app.use('/v1/bookings', bookingRouter)
 app.use('/v1/services', serviceRouter)
+app.use('/v1/availabilities', availabilityRouter)
 
 // https://signatureapi.com/docs/api/errors
 app.use(apiError)
