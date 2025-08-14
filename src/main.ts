@@ -11,16 +11,30 @@ import availabilityRouter from '@/controllers/availability'
 import apiError from '@/middlewares/api-error'
 import validateAuth from '@/middlewares/validate-auth'
 import { auth } from '@/utils/auth'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 const app: Express = express()
 
 const origin = [env.API_FRONTEND_URL_LOCAL, env.API_FRONTEND_URL_PROD]
-const corsOptions = {
-    origin,
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-}
+
+// const corsOptions = {
+//     origin: origin,
+//     credentials: true,
+//     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//     // allowedHeaders: ['Content-Type', 'Authorization'],
+// }
+
+// app.use(cors(corsOptions))
+
+app.use(
+    cors({
+        origin: origin,
+        credentials: true,
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    })
+)
 
 // app health check
 app.get('/health', (_req, res) => {
@@ -34,7 +48,6 @@ app.get('/health', (_req, res) => {
  */
 app.all('/api/auth/{*any}', toNodeHandler(auth))
 
-app.use(cors(corsOptions))
 app.use(compression())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
