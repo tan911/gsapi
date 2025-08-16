@@ -1,5 +1,12 @@
 import { AvailabilityStatus } from '@prisma/client'
 
+export type TAvailabilityData = {
+    dayOfWeek?: number
+    startTime?: string
+    endTime?: string
+    isActive?: boolean
+}
+
 export type TGetAvailability = {
     params: {
         id: string

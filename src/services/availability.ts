@@ -1,16 +1,10 @@
 import { PrismaClient, AvailabilityStatus, Availability } from '@/prisma/index'
 import { Logger } from 'winston'
+import { TAvailabilityData } from '@/types/availability'
 
 interface Context {
     prisma: PrismaClient
     logger: Logger
-}
-
-type TAvailabilityData = {
-    dayOfWeek?: number
-    startTime?: string
-    endTime?: string
-    isActive?: boolean
 }
 
 export class AvailabilityService {
