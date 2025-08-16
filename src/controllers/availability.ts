@@ -10,7 +10,9 @@ import {
     TCreateAvailability,
     TDeleteAvailability,
     TCreateRecurringAvailability,
-    TUpdateRecurringAvailability,
+    // TUpdateRecurringAvailability,
+    TGetRecurringAvailability,
+    TDeleteRecurringAvailability,
 } from '@/types/availability'
 import { getValidated } from '@/utils/validation'
 
@@ -23,7 +25,7 @@ router.post(
             id: z.cuid(),
         }),
         body: z.object({
-            dayOfWeek: z.string(),
+            dayOfWeek: z.coerce.number().int().lte(7).gte(1),
             startTime: z.string(),
             endTime: z.string(),
             timezone: z.string().optional(),
@@ -37,11 +39,33 @@ router.post(
             const reqBody = {
                 artistId: getReq.params.id,
                 ...getReq.body,
-                dayOfWeek: Number(getReq.body.dayOfWeek),
             }
             const data = await service.createRecurringAvailability(reqBody)
 
             res.status(201).json({
+                data: data,
+            })
+        } catch (err) {
+            next(err)
+        }
+    }
+)
+
+router.get(
+    '/recurring/:id',
+    validateRequest({
+        params: z.object({
+            id: z.cuid(),
+        }),
+    }),
+    async (req: Request, res, next) => {
+        const service = new AvailabilityService({ prisma, logger })
+
+        try {
+            const getReq = getValidated<TGetRecurringAvailability>(req)
+            const data = await service.getRecurringAvailability(getReq.params.id)
+
+            res.status(200).json({
                 data: data,
             })
         } catch (err) {
@@ -64,7 +88,7 @@ router.delete(
         const service = new AvailabilityService({ prisma, logger })
 
         try {
-            const getReq = getValidated<TUpdateRecurringAvailability>(req)
+            const getReq = getValidated<TDeleteRecurringAvailability>(req)
             const data = await service.deleteRecurringAvailability(getReq.params.id)
 
             res.status(200).json({

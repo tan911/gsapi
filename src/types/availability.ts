@@ -58,8 +58,20 @@ export type TCreateRecurringAvailability = {
         timezone?: string
     }
 }
+
 export type TUpdateRecurringAvailability = {
     params: {
         id: number
+    }
+    body: TAvailabilityData
+}
+export type TDeleteRecurringAvailability = {
+    params: {
+        id: number
+    }
+}
+export type TGetRecurringAvailability = {
+    params: {
+        id: string
     }
 }
