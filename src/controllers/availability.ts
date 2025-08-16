@@ -51,7 +51,7 @@ router.post(
 )
 
 router.delete(
-    '/recurring',
+    '/recurring/:id',
     validateRequest({
         params: z.object({
             id: z.number(),
