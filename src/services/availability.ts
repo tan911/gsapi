@@ -1,4 +1,4 @@
-import { PrismaClient, AvailabilityStatus } from '@/prisma/index'
+import { PrismaClient, AvailabilityStatus, Availability } from '@/prisma/index'
 import { Logger } from 'winston'
 
 interface Context {
@@ -23,8 +23,8 @@ export class AvailabilityService {
         endTime: string // "17:00"
         timezone?: string
     }) {
-        const startTime = new Date(`1970-01-01T${data.startTime}:00.000Z`)
-        const endTime = new Date(`1970-01-01T${data.endTime}:00.000Z`)
+        const startTime = new Date(`1970-01-01T${data.startTime}:00.000Z`).toISOString()
+        const endTime = new Date(`1970-01-01T${data.endTime}:00.000Z`).toISOString()
 
         return await this.ctx.prisma.recurringAvailability.create({
             data: {
@@ -162,7 +162,7 @@ export class AvailabilityService {
     }
 
     public async updateAvailability(
-        id: number,
+        id: Availability['id'],
         data: {
             startTime?: string
             endTime?: string
@@ -192,7 +192,7 @@ export class AvailabilityService {
         })
     }
 
-    public async deleteAvailability(id: number) {
+    public async deleteAvailability(id: Availability['id']) {
         return await this.ctx.prisma.availability.delete({
             where: { id },
         })

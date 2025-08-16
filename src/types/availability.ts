@@ -4,7 +4,7 @@ export type TGetAvailability = {
     params: {
         id: string
     }
-    body: {
+    query: {
         startDate: string
         endDate: string
     }
@@ -23,7 +23,7 @@ export type TUpdateAvailability = {
 }
 export type TCreateAvailability = {
     params: {
-        id: number
+        id: string
     }
     body: {
         date: string
@@ -31,5 +31,28 @@ export type TCreateAvailability = {
         endTime: string
         status?: AvailabilityStatus
         notes?: string
+    }
+}
+
+export type TDeleteAvailability = {
+    params: {
+        id: number
+    }
+}
+
+export type TCreateRecurringAvailability = {
+    params: {
+        id: string
+    }
+    body: {
+        dayOfWeek: number
+        startTime: string
+        endTime: string
+        timezone?: string
+    }
+}
+export type TUpdateRecurringAvailability = {
+    params: {
+        id: number
     }
 }
