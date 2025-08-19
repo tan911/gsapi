@@ -9,8 +9,8 @@ const envSchema = z.object({
         .string()
         .default(process.env.API_ENVIRONMENT === 'development' ? 'dev' : 'combined'),
     API_ENVIRONMENT: z.string().default('development'),
-    API_FRONTEND_URL_LOCAL: z.string().default('http://localhost:4000'),
-    API_FRONTEND_URL_PROD: z.string().default('https://localhost:5000'),
+    API_FRONTEND_URL_LOCAL: z.string().default('http://localhost:3000'),
+    API_FRONTEND_URL_PROD: z.string().default('https://localhost:3000'),
 })
 
 const env = envSchema.parse(process.env)

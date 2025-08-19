@@ -7,19 +7,34 @@ import env from '@/config/env'
 import logger from '@/config/logger'
 import bookingRouter from '@/controllers/booking'
 import serviceRouter from '@/controllers/service-offering'
+import availabilityRouter from '@/controllers/availability'
 import apiError from '@/middlewares/api-error'
 import validateAuth from '@/middlewares/validate-auth'
 import { auth } from '@/utils/auth'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 const app: Express = express()
 
 const origin = [env.API_FRONTEND_URL_LOCAL, env.API_FRONTEND_URL_PROD]
-const corsOptions = {
-    origin,
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-}
+
+// const corsOptions = {
+//     origin: origin,
+//     credentials: true,
+//     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//     // allowedHeaders: ['Content-Type', 'Authorization'],
+// }
+
+// app.use(cors(corsOptions))
+
+app.use(
+    cors({
+        origin: origin,
+        credentials: true,
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    })
+)
 
 // app health check
 app.get('/health', (_req, res) => {
@@ -33,7 +48,6 @@ app.get('/health', (_req, res) => {
  */
 app.all('/api/auth/{*any}', toNodeHandler(auth))
 
-app.use(cors(corsOptions))
 app.use(compression())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
@@ -54,6 +68,7 @@ app.use('/v1', validateAuth)
 // private routes
 app.use('/v1/bookings', bookingRouter)
 app.use('/v1/services', serviceRouter)
+app.use('/v1/availabilities', availabilityRouter)
 
 // https://signatureapi.com/docs/api/errors
 app.use(apiError)
