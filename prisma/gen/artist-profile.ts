@@ -11,8 +11,6 @@ export async function createArtistProfiles(artist: User[] | any) {
                 userId: artist[0].id,
                 bio: 'Professional makeup artist specializing in bridal and special event makeup. Over 8 years of experience creating stunning looks for weddings, photoshoots, and special occasions.',
                 experienceYears: 8,
-                location: 'New York, NY',
-                rating: 4.9,
             },
         }),
         prisma.artist.create({
@@ -20,8 +18,6 @@ export async function createArtistProfiles(artist: User[] | any) {
                 userId: artist[1].id,
                 bio: 'Creative hair stylist with expertise in cutting, coloring, and styling. Passionate about helping clients express their personality through their hair.',
                 experienceYears: 6,
-                location: 'Los Angeles, CA',
-                rating: 4.7,
             },
         }),
         prisma.artist.create({
@@ -29,8 +25,6 @@ export async function createArtistProfiles(artist: User[] | any) {
                 userId: artist[2].id,
                 bio: 'Certified nail technician offering manicures, pedicures, and nail art. Specializing in gel extensions and intricate nail designs.',
                 experienceYears: 4,
-                location: 'Chicago, IL',
-                rating: 4.8,
             },
         }),
         prisma.artist.create({
@@ -38,8 +32,6 @@ export async function createArtistProfiles(artist: User[] | any) {
                 userId: artist[3].id,
                 bio: 'Professional photographer specializing in portraits, events, and commercial photography. Available for both studio and on-location shoots.',
                 experienceYears: 10,
-                location: 'Miami, FL',
-                rating: 4.95,
             },
         }),
     ])
