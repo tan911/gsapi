@@ -9,7 +9,7 @@ export default async function validateAuth(req: Request, res: Response, next: Ne
         })
 
         if (!session) {
-            res.status(403).json({ status: 403, title: 'Unauthorized' })
+            return res.status(403).json({ status: 403, title: 'Unauthorized' })
         }
 
         next()
