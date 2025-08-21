@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import express, { type Express } from 'express'
 import { toNodeHandler } from 'better-auth/node'
 import morgan from 'morgan'
@@ -11,26 +12,12 @@ import availabilityRouter from '@/controllers/availability'
 import apiError from '@/middlewares/api-error'
 import validateAuth from '@/middlewares/validate-auth'
 import { auth } from '@/utils/auth'
-import dotenv from 'dotenv'
-
-dotenv.config()
 
 const app: Express = express()
 
-const origin = [env.API_FRONTEND_URL_LOCAL, env.API_FRONTEND_URL_PROD]
-
-// const corsOptions = {
-//     origin: origin,
-//     credentials: true,
-//     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-//     // allowedHeaders: ['Content-Type', 'Authorization'],
-// }
-
-// app.use(cors(corsOptions))
-
 app.use(
     cors({
-        origin: origin,
+        origin: [env.API_FRONTEND_URL_LOCAL, env.API_FRONTEND_URL_PROD],
         credentials: true,
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     })

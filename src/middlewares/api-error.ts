@@ -6,10 +6,9 @@ import logger from '@/config/logger'
 export default function apiError(err: unknown, req: Request, res: Response, _next: NextFunction) {
     const error = parseError(err)
 
-    logger.error(`[application-error-handler] `, {
-        type: req.method + req.url,
-        ...error,
-    })
+    logger.error(
+        `[application-error-handler]: URL:${req.url} STATUS:${error.status} TITLE:${error.title}`
+    )
 
     logger.debug(error)
 
