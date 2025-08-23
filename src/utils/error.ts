@@ -1,5 +1,24 @@
 import { ZodError } from 'zod'
 
+// export interface IErrorResponse {
+//     status: number
+//     message: string
+//     code?: string
+//     errors?: string[]
+//     requestId: string
+// }
+
+// export class AppError extends Error {
+//     public status: number
+//     public code?: string
+
+//     constructor(message: string, status: number = 500, code?: string) {
+//         super(message)
+//         this.status = status
+//         this.code = code
+//     }
+// }
+
 function parseZodError(err: ZodError) {
     return {
         status: 422,
