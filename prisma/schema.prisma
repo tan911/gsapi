@@ -136,6 +136,18 @@ model Service {
   @@map("services")
 }
 
+//TODO
+// model ServiceCategory {
+//   id        Int      @id @default(autoincrement())
+//   name      String   @db.VarChar(100)
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+
+//   services Service[]
+
+//   @@map("service_categories")
+// }
+
 model Booking {
   id          Int           @id @default(autoincrement())
   clientId    String

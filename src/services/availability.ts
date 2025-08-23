@@ -38,7 +38,7 @@ export class AvailabilityService {
         return await this.ctx.prisma.recurringAvailability.findMany({
             where: {
                 artistId,
-                isActive: true,
+                // isActive: true,
             },
             orderBy: [{ dayOfWeek: 'asc' }, { startTime: 'asc' }],
         })
@@ -47,13 +47,15 @@ export class AvailabilityService {
     public async updateRecurringAvailability(id: number, data: TAvailabilityData) {
         const updateData: TAvailabilityData = {}
 
+        console.log(data, '===============')
+
         if (data.startTime) {
             updateData.startTime = new Date(`1970-01-01T${data.startTime}:00.000Z`).toISOString()
         }
         if (data.endTime) {
             updateData.endTime = new Date(`1970-01-01T${data.endTime}:00.000Z`).toISOString()
         }
-        if (data.dayOfWeek) updateData.dayOfWeek = data.dayOfWeek
+        // if (data.dayOfWeek) updateData.dayOfWeek = data.dayOfWeek
         if (data.isActive !== undefined) updateData.isActive = data.isActive
 
         return await this.ctx.prisma.recurringAvailability.update({

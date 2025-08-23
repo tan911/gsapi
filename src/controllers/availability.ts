@@ -10,7 +10,7 @@ import {
     TCreateAvailability,
     TDeleteAvailability,
     TCreateRecurringAvailability,
-    // TUpdateRecurringAvailability,
+    TUpdateRecurringAvailability,
     TGetRecurringAvailability,
     TDeleteRecurringAvailability,
 } from '@/types/availability'
@@ -64,6 +64,38 @@ router.get(
         try {
             const getReq = getValidated<TGetRecurringAvailability>(req)
             const data = await service.getRecurringAvailability(getReq.params.id)
+
+            res.status(200).json({
+                data: data,
+            })
+        } catch (err) {
+            next(err)
+        }
+    }
+)
+
+router.put(
+    '/recurring/:id',
+    validateRequest({
+        params: z.object({
+            id: z.number(),
+        }),
+        body: z.object({
+            // dayOfWeek: z.coerce.number().int().lte(7).gte(1).optional(),
+            startTime: z.string().optional(),
+            endTime: z.string().optional(),
+            isActive: z.boolean().optional(),
+        }),
+        transform: (req: Request) => ({
+            id: Number(req.params.id),
+        }),
+    }),
+    async (req: Request, res, next) => {
+        const service = new AvailabilityService({ prisma, logger })
+
+        try {
+            const getReq = getValidated<TUpdateRecurringAvailability>(req)
+            const data = await service.updateRecurringAvailability(getReq.params.id, getReq.body)
 
             res.status(200).json({
                 data: data,
