@@ -47,8 +47,6 @@ export class AvailabilityService {
     public async updateRecurringAvailability(id: number, data: TAvailabilityData) {
         const updateData: TAvailabilityData = {}
 
-        console.log(data, '===============')
-
         if (data.startTime) {
             updateData.startTime = new Date(`1970-01-01T${data.startTime}:00.000Z`).toISOString()
         }
