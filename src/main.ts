@@ -59,6 +59,12 @@ app.use(
     })
 )
 
+/**
+ *  Disable x-powered-by header sent by exrpress same as hidePoweredBy in helmet
+ *  https://expressjs.com/en/advanced/best-practice-security.html#at-a-gl
+ */
+app.disable('x-powered-by')
+
 app.use(compression())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
