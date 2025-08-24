@@ -2,6 +2,7 @@ import 'dotenv/config'
 import express, { type Express } from 'express'
 import { toNodeHandler } from 'better-auth/node'
 import morgan from 'morgan'
+import helmet from 'helmet'
 import cors from 'cors'
 import compression from 'compression'
 import env from '@/config/env'
@@ -34,6 +35,29 @@ app.get('/health', (_req, res) => {
  *
  */
 app.all('/api/auth/{*any}', toNodeHandler(auth))
+
+app.use(
+    helmet({
+        contentSecurityPolicy: false,
+        crossOriginResourcePolicy: { policy: 'cross-origin' },
+
+        // Force client/browser to use HTTPS when in production
+        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport
+        hsts:
+            process.env.API_ENVIRONMENT === 'production'
+                ? {
+                      maxAge: 31536000, // 1 year
+                      includeSubDomains: true,
+                      preload: true,
+                  }
+                : false,
+
+        hidePoweredBy: true,
+        frameguard: { action: 'deny' },
+        noSniff: true,
+        referrerPolicy: { policy: 'no-referrer' },
+    })
+)
 
 app.use(compression())
 app.use(express.urlencoded({ extended: true }))
