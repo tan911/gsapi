@@ -2,6 +2,7 @@ import { betterAuth } from 'better-auth'
 import { prismaAdapter } from 'better-auth/adapters/prisma'
 import prisma from '@/prisma/index'
 import { createAuthMiddleware, APIError } from 'better-auth/api'
+// import { customSession } from 'better-auth/plugins'
 
 export const auth = betterAuth({
     database: prismaAdapter(prisma, {
@@ -18,6 +19,7 @@ export const auth = betterAuth({
             },
         },
     },
+
     hooks: {
         after: createAuthMiddleware(async (ctx) => {
             try {
@@ -33,13 +35,31 @@ export const auth = betterAuth({
                     })
 
                     if (!isExist) {
-                        await prisma.artist.create({
+                        const data = await prisma.artist.create({
                             data: {
                                 userId: ctx.context.newSession.user.id,
                                 bio: '',
                                 experienceYears: 0,
                             },
                         })
+
+                        // attach artistId to user session
+                        return {
+                            ...(ctx.context.returned ?? {}),
+                            user: {
+                                ...ctx.context.newSession.user,
+                                artistId: data.id, // artistId
+                            },
+                        }
+                    }
+
+                    // attach artistId to user session
+                    return {
+                        ...(ctx.context.returned ?? {}),
+                        user: {
+                            ...ctx.context.newSession.user,
+                            artistId: isExist?.id ?? null, // artistId
+                        },
                     }
                 }
             } catch (error) {
