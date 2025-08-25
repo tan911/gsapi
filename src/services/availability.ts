@@ -1,5 +1,6 @@
 import { PrismaClient, AvailabilityStatus, Availability } from '@/prisma/index'
 import { Logger } from 'winston'
+import { DateTime } from 'luxon'
 import { TAvailabilityData } from '@/types/availability'
 
 interface Context {
@@ -17,8 +18,15 @@ export class AvailabilityService {
         endTime: string // "17:00"
         timezone?: string
     }) {
-        const startTime = new Date(`1970-01-01T${data.startTime}:00.000Z`).toISOString()
-        const endTime = new Date(`1970-01-01T${data.endTime}:00.000Z`).toISOString()
+        const startTime = DateTime.fromFormat(data.startTime, 'HH:mm')
+            .set({ year: 1970, month: 1, day: 1 })
+            .toUTC()
+            .toISO() as string
+
+        const endTime = DateTime.fromFormat(data.endTime, 'HH:mm')
+            .set({ year: 1970, month: 1, day: 1 })
+            .toUTC()
+            .toISO() as string
 
         return await this.ctx.prisma.recurringAvailability.create({
             data: {
@@ -48,10 +56,16 @@ export class AvailabilityService {
         const updateData: TAvailabilityData = {}
 
         if (data.startTime) {
-            updateData.startTime = new Date(`1970-01-01T${data.startTime}:00.000Z`).toISOString()
+            updateData.startTime = DateTime.fromFormat(data.startTime, 'HH:mm')
+                .set({ year: 1970, month: 1, day: 1 })
+                .toUTC()
+                .toISO() as string
         }
         if (data.endTime) {
-            updateData.endTime = new Date(`1970-01-01T${data.endTime}:00.000Z`).toISOString()
+            updateData.endTime = DateTime.fromFormat(data.endTime, 'HH:mm')
+                .set({ year: 1970, month: 1, day: 1 })
+                .toUTC()
+                .toISO() as string
         }
         // if (data.dayOfWeek) updateData.dayOfWeek = data.dayOfWeek
         if (data.isActive !== undefined) updateData.isActive = data.isActive
@@ -81,8 +95,14 @@ export class AvailabilityService {
             } = {
                 dayOfWeek: schedule.dayOfWeek as number,
                 isActive: schedule.isActive as boolean,
-                startTime: new Date(`1970-01-01T${schedule.startTime}:00.000Z`).toISOString(),
-                endTime: new Date(`1970-01-01T${schedule.endTime}:00.000Z`).toISOString(),
+                startTime: DateTime.fromFormat(schedule.startTime as string, 'HH:mm')
+                    .set({ year: 1970, month: 1, day: 1 })
+                    .toUTC()
+                    .toISO() as string,
+                endTime: DateTime.fromFormat(schedule.endTime as string, 'HH:mm')
+                    .set({ year: 1970, month: 1, day: 1 })
+                    .toUTC()
+                    .toISO() as string,
             }
 
             // if (schedule.startTime) {
@@ -127,8 +147,14 @@ export class AvailabilityService {
         status?: AvailabilityStatus
         notes?: string
     }) {
-        const startTime = new Date(`1970-01-01T${data.startTime}:00.000Z`).toISOString()
-        const endTime = new Date(`1970-01-01T${data.endTime}:00.000Z`).toISOString()
+        const startTime = DateTime.fromFormat(data.startTime, 'HH:mm')
+            .set({ year: 1970, month: 1, day: 1 })
+            .toUTC()
+            .toISO() as string
+        const endTime = DateTime.fromFormat(data.endTime, 'HH:mm')
+            .set({ year: 1970, month: 1, day: 1 })
+            .toUTC()
+            .toISO() as string
 
         return await this.ctx.prisma.availability.create({
             data: {
@@ -172,10 +198,16 @@ export class AvailabilityService {
         } = {}
 
         if (data.startTime) {
-            updateData.startTime = new Date(`1970-01-01T${data.startTime}:00.000Z`).toDateString()
+            updateData.startTime = DateTime.fromFormat(data.startTime, 'HH:mm')
+                .set({ year: 1970, month: 1, day: 1 })
+                .toUTC()
+                .toISO() as string
         }
         if (data.endTime) {
-            updateData.endTime = new Date(`1970-01-01T${data.endTime}:00.000Z`).toDateString()
+            updateData.endTime = DateTime.fromFormat(data.endTime, 'HH:mm')
+                .set({ year: 1970, month: 1, day: 1 })
+                .toUTC()
+                .toISO() as string
         }
         if (data.status) updateData.status = data.status
         if (data.notes !== undefined) updateData.notes = data.notes
