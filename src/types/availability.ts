@@ -75,3 +75,10 @@ export type TGetRecurringAvailability = {
         id: string
     }
 }
+
+export type TBulkRecurringAvailability = {
+    params: {
+        id: string
+    }
+    body: TAvailabilityData[]
+}

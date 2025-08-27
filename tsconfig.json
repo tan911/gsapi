@@ -13,7 +13,6 @@
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
 
-        /* Paths */
         "baseUrl": ".",
         "paths": {
             "@/*": ["src/*"],
@@ -24,10 +23,9 @@
             "@/prisma/*": ["prisma/*"]
         }
     },
-    "include": ["src/**/*", "prisma/**/*.ts"],
-    "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"],
+    "include": ["src/**/*", "prisma/**/*.ts", "tests/**/*.test.ts", "jest.config.mjs"],
+    "exclude": ["node_modules", "dist", "**/*.spec.ts"],
     "ts-node": {
         "esm": true
-        // "experimentalSpecifierResolution": "node"
     }
 }

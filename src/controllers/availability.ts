@@ -13,6 +13,7 @@ import {
     TUpdateRecurringAvailability,
     TGetRecurringAvailability,
     TDeleteRecurringAvailability,
+    TBulkRecurringAvailability,
 } from '@/types/availability'
 import { getValidated } from '@/utils/validation'
 
@@ -100,6 +101,38 @@ router.put(
             res.status(200).json({
                 data: data,
             })
+        } catch (err) {
+            next(err)
+        }
+    }
+)
+
+router.put(
+    '/recurring/bulk/:id',
+    validateRequest({
+        params: z.object({
+            id: z.string(),
+        }),
+        body: z.array(
+            z.object({
+                dayOfWeek: z.coerce.number().int().lte(7).gte(1).optional(),
+                startTime: z.string().optional(),
+                endTime: z.string().optional(),
+                isActive: z.boolean().optional(),
+            })
+        ),
+    }),
+    async (req: Request, res, next) => {
+        const service = new AvailabilityService({ prisma, logger })
+
+        try {
+            const getReq = getValidated<TBulkRecurringAvailability>(req)
+            const data = await service.bulkUpdateRecurringAvailability(
+                getReq.params.id,
+                getReq.body
+            )
+
+            res.status(200).json({ data: data })
         } catch (err) {
             next(err)
         }
