@@ -1,4 +1,4 @@
-import { Artist } from '@/prisma/index'
+import { Service } from '@/prisma/index'
 
 export interface OnboardingStep {
     id: number
@@ -34,7 +34,7 @@ export type TBasicInfo = {
 
 export type TServices = {
     body: {
-        services: Artist[]
+        services: Service[]
     }
 }
 
