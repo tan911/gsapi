@@ -31,20 +31,55 @@ enum BookingStatus {
   Completed
 }
 
+enum BookingPaymentStatus {
+  unpaid
+  paid
+  partial
+  refunded
+}
+
+enum BookingSource {
+  web
+  app
+  phone
+  manual
+}
+
+enum BookingLocationType {
+  client
+  studio
+  other
+}
+
+enum ReminderChannel {
+  email
+  sms
+  push
+}
+
+enum BlockedDateType {
+  personal
+  vacation
+  sick
+  other
+}
+
 model User {
-  id            String         @id @default(cuid())
-  name          String
-  email         String
-  role          Role           @default(client)
-  emailVerified Boolean        @default(false)
-  image         String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id                  String   @id @default(cuid())
+  name                String
+  email               String
+  role                Role     @default(client)
+  emailVerified       Boolean  @default(false)
+  image               String?
+  onboardingCompleted Boolean  @default(false) @map("onboarding_completed")
+  onboardingStep      Int      @default(1) @map("onboarding_step")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
   sessions      Session[]
   accounts      Account[]
   artist        Artist[]
   clientBooking Booking[]      @relation("clientBooking")
-  artistBooking Booking[]      @relation("artistBooking")
   Location      UserLocation[]
 
   @@unique([email])
@@ -113,6 +148,8 @@ model Artist {
   RecurringAvailability       RecurringAvailability[]
   ArtistServiceAreas          ArtistServiceAreas[]
   artistPreferredServiceAreas ArtistPreferredServiceAreas[]
+  blockedDates                ArtistBlockedDate[]
+  bookings                    Booking[] // Added reverse relation
 
   @@map("artists")
 }
@@ -149,23 +186,38 @@ model Service {
 // }
 
 model Booking {
-  id          Int           @id @default(autoincrement())
-  clientId    String
-  artistId    String
-  serviceId   Int
-  bookingDate DateTime
-  startTime   DateTime      @map("start_time") @db.Time
-  endTime     DateTime      @map("end_time") @db.Time
-  price       Decimal
-  status      BookingStatus @default(Pending)
-  location    String        @db.VarChar(255)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id                 Int                  @id @default(autoincrement())
+  clientId           String
+  artistId           String
+  serviceId          Int
+  bookingDate        DateTime
+  startTime          DateTime             @map("start_time") @db.Time
+  endTime            DateTime             @map("end_time") @db.Time
+  price              Decimal
+  servicePrice       Decimal?
+  travelFee          Decimal?             @default(0)
+  totalAmount        Decimal?
+  status             BookingStatus        @default(Pending)
+  location           String               @db.VarChar(255)
+  paymentStatus      BookingPaymentStatus @default(unpaid) @map("payment_status")
+  isTravel           Boolean              @default(false) @map("is_travel")
+  travelDistanceKm   Decimal?             @map("travel_distance_km")
+  notes              String?
+  remindersSent      ReminderChannel[]
+  calendarColor      String?              @map("calendar_color")
+  recurring          Boolean              @default(false)
+  recurrenceRule     String?              @map("recurrence_rule")
+  cancellationReason String?              @map("cancellation_reason")
+  source             BookingSource        @default(web)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
 
-  // ref: https://github.com/prisma/prisma/discussions/13341
-  client  User    @relation(fields: [clientId], references: [id], name: "clientBooking", onDelete: Cascade)
-  artist  User    @relation(fields: [artistId], references: [id], name: "artistBooking", onDelete: Cascade)
-  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  // Fixed relations: Now properly reference Artist and User
+  client         User                @relation(fields: [clientId], references: [id], name: "clientBooking", onDelete: Cascade)
+  artist         Artist              @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  service        Service             @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  locationDetail BookingLocation?
+  attachments    BookingAttachment[]
 
   @@map("bookings")
 }
@@ -205,6 +257,37 @@ model RecurringAvailability {
   @@unique([artistId, dayOfWeek], name: "artistId_dayOfWeek")
   @@index([artistId, dayOfWeek, isActive])
   @@map("recurring_availabilities")
+}
+
+model BookingLocation {
+  id         Int                 @id @default(autoincrement())
+  bookingId  Int                 @unique
+  address    String              @db.VarChar(100)
+  city       String              @db.VarChar(100)
+  region     String?             @db.VarChar(100)
+  postalCode String?             @map("postal_code") @db.VarChar(20)
+  latitude   Decimal?            @db.Decimal(10, 8)
+  longitude  Decimal?            @db.Decimal(11, 8)
+  type       BookingLocationType @default(client)
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@map("booking_locations")
+}
+
+model BookingAttachment {
+  id        Int      @id @default(autoincrement())
+  bookingId Int
+  url       String
+  type      String?
+  createdAt DateTime @default(now())
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([bookingId])
+  @@map("booking_attachments")
 }
 
 /**
@@ -263,4 +346,19 @@ model ArtistPreferredServiceAreas {
 
   @@unique([artistId, city, state, country])
   @@map("artist_preferred_service_areas")
+}
+
+model ArtistBlockedDate {
+  id        Int             @id @default(autoincrement())
+  artistId  String
+  date      DateTime        @db.Date
+  reason    String?
+  type      BlockedDateType @default(personal)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  artist Artist @relation(fields: [artistId], references: [id], onDelete: Cascade)
+
+  @@unique([artistId, date])
+  @@map("artist_blocked_dates")
 }

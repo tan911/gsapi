@@ -17,12 +17,27 @@ export const auth = betterAuth({
                 type: 'string',
                 input: true,
             },
+            onboardingCompleted: {
+                type: 'boolean',
+            },
+            onboardingStep: {
+                type: 'number',
+            },
         },
     },
 
     hooks: {
         after: createAuthMiddleware(async (ctx) => {
             try {
+                if (ctx.context.newSession?.user.role === 'client') {
+                    return {
+                        ...(ctx.context.returned ?? {}),
+                        user: {
+                            ...ctx.context.newSession.user,
+                        },
+                    }
+                }
+
                 if (ctx.context.newSession?.user.role === 'artist') {
                     /**
                      *

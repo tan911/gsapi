@@ -5,7 +5,7 @@ import logger from '@/config/logger'
 import { BookingService } from '@/services/booking'
 import { validateRequest } from '@/middlewares/validate-request'
 import { getValidated } from '@/utils/validation'
-import { TGetBooking, TGetBookings, TUpdateBooking } from '@/types/booking'
+import { TGetBooking, TGetBookings, TUpdateBooking, TCreateBooking } from '@/types/booking'
 
 const router: Router = Router()
 
@@ -82,15 +82,12 @@ router.put(
     '/:id',
     validateRequest({
         params: z.object({
-            id: z.string().min(1),
+            id: z.string().transform((val) => Number(val)),
         }),
         body: z.object({
             // TODO: Allow updates for client users.
             // Currently unsure of what client users are allowed to do, so leaving it as is for now.
             status: z.enum(BookingStatus),
-        }),
-        transform: (req: Request) => ({
-            id: Number(req.params.id),
         }),
     }),
     async (req: Request, res, next) => {
@@ -101,6 +98,54 @@ router.put(
             const data = await service.update(getReq.params.id, getReq.body)
 
             res.status(200).json({
+                data: data,
+            })
+        } catch (err) {
+            next(err)
+        }
+    }
+)
+
+router.post(
+    '/',
+    validateRequest({
+        body: z.object({
+            clientId: z.string(),
+            artistId: z.cuid(),
+            serviceId: z.number().int().positive(),
+            bookingDate: z.string().transform((val) => new Date(val)),
+            startTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/),
+            endTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/),
+            price: z.number().positive(),
+            servicePrice: z.number().positive().optional(),
+            travelFee: z.number().min(0).optional(),
+            totalAmount: z.number().positive().optional(),
+            location: z.string().min(1),
+            isTravel: z.boolean().optional(),
+            travelDistanceKm: z.number().min(0).optional(),
+            notes: z.string().optional(),
+            calendarColor: z.string().optional(),
+            recurring: z.boolean().optional(),
+            recurrenceRule: z.string().optional(),
+            source: z.enum(['web', 'app', 'phone', 'manual']).optional(),
+        }),
+    }),
+    async (req: Request, res, next) => {
+        const service = new BookingService({ prisma, logger })
+
+        try {
+            const { body } = getValidated<TCreateBooking>(req)
+
+            // Get the authenticated user ID from the request (set by validateAuth middleware)
+            const authenticatedUserId = req.user?.id
+
+            if (!authenticatedUserId) {
+                return res.status(401).json({ error: 'User not authenticated' })
+            }
+
+            const data = await service.create(body, authenticatedUserId)
+
+            res.status(201).json({
                 data: data,
             })
         } catch (err) {

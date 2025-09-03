@@ -7,7 +7,10 @@ import cors from 'cors'
 import compression from 'compression'
 import env from '@/config/env'
 import logger from '@/config/logger'
+import userRouter from '@/controllers/user'
 import bookingRouter from '@/controllers/booking'
+import calendarRouter from '@/controllers/calendar'
+import blockedDatesRouter from '@/controllers/blocked-dates'
 import serviceRouter from '@/controllers/service-offering'
 import availabilityRouter from '@/controllers/availability'
 import apiError from '@/middlewares/api-error'
@@ -83,9 +86,12 @@ app.use(
 app.use('/v1', validateAuth)
 
 // private routes
+app.use('/v1/users', userRouter)
 app.use('/v1/bookings', bookingRouter)
 app.use('/v1/services', serviceRouter)
 app.use('/v1/availabilities', availabilityRouter)
+app.use('/v1/calendar', calendarRouter)
+app.use('/v1/blocked-dates', blockedDatesRouter)
 
 // https://signatureapi.com/docs/api/errors
 app.use(apiError)
