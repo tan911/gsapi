@@ -154,6 +154,28 @@ export class OnboardingService {
         }
     }
 
+    /* Check if onboarding is complete */
+    public static isOnboardingComplete(
+        userRole: 'client' | 'artist',
+        currentStep: number
+    ): boolean {
+        const steps = userRole === 'client' ? this.CLIENT_STEPS : this.ARTIST_STEPS
+
+        return currentStep > steps.length
+    }
+    /**
+     * Get the next step
+     */
+    static getNextStep(
+        userRole: 'client' | 'artist',
+        currentStepId: number
+    ): OnboardingStep | null {
+        const steps = userRole === 'client' ? this.CLIENT_STEPS : this.ARTIST_STEPS
+        const nextStepId = currentStepId + 1
+
+        return steps.find((step) => step.id === nextStepId) || null
+    }
+
     /**
      * Helper: Get completed steps array
      */

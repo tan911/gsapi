@@ -45,6 +45,9 @@ export type TLocationAndTravel = {
         state?: string
         country?: string
         travelRadiusKm?: number
+        latitude?: number
+        longitude?: number
+        postalCode?: string
     }
 }
 
@@ -54,5 +57,8 @@ export type TLocation = {
         city?: string
         state?: string
         country?: string
+        latitude?: number
+        longitude?: number
+        postalCode?: string
     }
 }
